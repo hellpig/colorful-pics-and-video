@@ -12,12 +12,13 @@ On Linux (Ubuntu), I did...
   ./a.out
 If you care to know, the SFML files are installed in /usr/include and /usr/lib .
 
-On Windows, you can easily get SFML to work via the MinGW version that the SFML people link to.
+On Windows, you can easily get SFML to work via the MinGW version that the SFML people link to...
+  https://www.sfml-dev.org/download/sfml/2.5.1/
 I put everything (MinGW, SFML, and this code) in the same folder,
 then I added ...\mingw64\bin\ to Windows' Path variable, then ran...
   g++ -O colorfulVideo.cpp -ISFML-2.5.1\include -LSFML-2.5.1\lib -lsfml-graphics -lsfml-window -lsfml-system
-Before running a.exe, I had to either move 3 .dll files from ...\SFML\bin\
-into the current folder or add ...\SFML\bin\ to Windows' Path variable.
+Before running a.exe, I had to either move 3 .dll files from ...\SFML-2.5.1\bin\
+into the current folder or add ...\SFML-2.5.1\bin\ to Windows' Path variable.
 
 On Windows, I could also get things to work via Visual Studio Community (I only needed to install "Desktop development with C++")
 by making a new "Project from Existing Code" and eventually selecting "Visual C++" then "console application".

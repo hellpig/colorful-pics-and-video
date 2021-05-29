@@ -56,7 +56,7 @@ int main(int argc, char ** argv){
   const int extraDelay = 0;   // per frame (in milliseconds)
 
 
-  //// create steps myRange[] for time steps
+  //// create steps and myRange[] for time steps
   const int steps = 231;   // twice this is length of myRange[]
   const float max = 2.3;
   float myRange[steps*2];  // will linearly increase from 0 to max, then decrease back to 0

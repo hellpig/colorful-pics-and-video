@@ -77,8 +77,8 @@ int main(int argc, char ** argv){
       R[x][y] = sqrt(pow(X[x] - max2/2, 2) + pow(X[y] - max2/2, 2));  // X[y] gives Y
 
 
-  int k = -1;     # frame counter
-  const float scale = 127.999;   # for scaling trig functions to be 0 to 255
+  int k = -1;     // frame counter
+  const float scale = 127.999;   // for scaling trig functions to be 0 to 255
 
 
   //////   SFML stuff

@@ -42,7 +42,7 @@ After all this work and installation of bloated software, it runs a bit slower t
 
 #include <cmath>
 
-// for my millisecond sleep function
+// for my millisecond sleep
 #include <thread>
 
 
@@ -90,15 +90,18 @@ int main(int argc, char ** argv){
   texture.loadFromImage(image);
   sf::Sprite sprite(texture);
   while (renderWindow.isOpen()){     // loop over frames
+    texture.loadFromImage(image);
+    renderWindow.draw(sprite);
+    renderWindow.display();
     while (renderWindow.pollEvent(event)){
       if (event.type == sf::Event::EventType::Closed)
         renderWindow.close();
     }
 
 
-
     // sleep
     std::this_thread::sleep_for(std::chrono::milliseconds(extraDelay));
+
 
     // take care of progress
     k++;
@@ -136,14 +139,8 @@ int main(int argc, char ** argv){
       }
     }
 
-    texture.loadFromImage(image);
 
 
-
-
-    //////   SFML stuff
-    renderWindow.draw(sprite);
-    renderWindow.display();
   }
 
 }

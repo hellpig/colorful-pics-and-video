@@ -7,3 +7,6 @@ Use **picGenerator.py** to make colorful images such as the following.
 
 Compile and run **colorfulVideo.cpp** to watch a colorful video!
 It uses the SFML library. The file tells you how to compile it.
+
+Run **colorfulVideo.py** to save the colorful video in various formats!
+It uses Matplotlib.

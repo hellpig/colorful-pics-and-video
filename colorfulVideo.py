@@ -11,6 +11,8 @@ from matplotlib import animation
 # define some things
 n = 501          # for n by n grid; n = 11 has an interesting look
 extraDelay = 10  # per frame (in milliseconds)
+# extraDelay can't be 0 to make a MP4, GIF, or HTML file,
+# even though extraDelay does not affect the MP4 or GIF file
 
 
 # create n by n by 1 arrays: X, Y, R
@@ -50,17 +52,18 @@ anim = animation.FuncAnimation(fig, animate, frames=3*length, interval=extraDela
 
 ######################## your options for saving or showing the animation ########################
 
-### The following makes an HTML file (recommended)
-with open("animation.html", "w") as f:
-  print(anim.to_html5_video(), file=f)
+### The following first required `sudo port install ffmpeg` on my macOS
+anim.save('animation.mp4', writer = animation.FFMpegWriter(fps=30))
+
+### The following makes an HTML file
+### The following first required `sudo port install ffmpeg` on my macOS
+#with open("animation.html", "w") as f:
+#  print(anim.to_html5_video(), file=f)
 
 ### The following only shows (does not save) the animation
 ### For larger n, pygame is faster than matplotlib! For small n, pygame is jumpy and slow.
 ### For some reason, making the figure window large slows it down (even if n is small).
 #plt.show()
-
-### The following first required `sudo port install ffmpeg` on my macOS
-#anim.save('animation.mp4', writer = animation.FFMpegWriter(fps=30))
 
 ### The following GIF will be a large file
 #anim.save('animation.gif', writer = animation.PillowWriter(fps=30))

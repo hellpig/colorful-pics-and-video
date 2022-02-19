@@ -53,10 +53,14 @@ anim = animation.FuncAnimation(fig, animate, frames=3*length, interval=extraDela
 ######################## your options for saving or showing the animation ########################
 
 ### The following first required `sudo port install ffmpeg` on my macOS
+### On Windows: https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/
+###   though you only need the ffmpeg.exe file
 anim.save('animation.mp4', writer = animation.FFMpegWriter(fps=30))
 
 ### The following makes an HTML file
 ### The following first required `sudo port install ffmpeg` on my macOS
+### On Windows: https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/
+###   though you only need the ffmpeg.exe file
 #with open("animation.html", "w") as f:
 #  print(anim.to_html5_video(), file=f)
 

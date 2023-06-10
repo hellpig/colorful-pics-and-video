@@ -3,12 +3,12 @@ Fun video!
 
 On macOS via MacPorts, I did...
   sudo port install sfml
-  g++ -std=c++11 -O colorfulVideo.cpp -I/opt/local/include -L/opt/local/lib -lsfml-graphics -lsfml-window -lsfml-system
+  g++ -std=c++11 -O3 colorfulVideo.cpp -I/opt/local/include -L/opt/local/lib -lsfml-graphics -lsfml-window -lsfml-system
   ./a.out
 
 On Linux (Ubuntu), I did...
-  sudo apt-get install libsfml-dev
-  g++ -O colorfulVideo.cpp -lsfml-graphics -lsfml-window -lsfml-system
+  sudo apt install libsfml-dev
+  g++ -O3 colorfulVideo.cpp -lsfml-graphics -lsfml-window -lsfml-system
   ./a.out
 If you care to know, the SFML files are installed in /usr/include and /usr/lib .
 
@@ -16,7 +16,7 @@ On Windows, you can easily get SFML to work via the MinGW version that the SFML 
   https://www.sfml-dev.org/download/sfml/2.5.1/
 I put everything (MinGW, SFML, and this code) in the same folder,
 then I added ...\mingw64\bin\ to Windows' Path variable, then ran...
-  g++ -O colorfulVideo.cpp -I SFML-2.5.1\include -L SFML-2.5.1\lib -lsfml-graphics -lsfml-window -lsfml-system
+  g++ -O3 colorfulVideo.cpp -I SFML-2.5.1\include -L SFML-2.5.1\lib -lsfml-graphics -lsfml-window -lsfml-system
 Before running a.exe, I had to either move 3 .dll files from ...\SFML-2.5.1\bin\
 into the current folder or add ...\SFML-2.5.1\bin\ to Windows' Path variable.
 

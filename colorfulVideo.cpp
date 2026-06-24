@@ -1,6 +1,9 @@
 /*
 Fun video!
 
+This code uses the SFML 2 API.
+It works with SFML 2.5/2.6. SFML 3 would require small API changes.
+
 On macOS via MacPorts, I did...
   sudo port install sfml
   g++ -std=c++11 -O3 colorfulVideo.cpp -I/opt/local/include -L/opt/local/lib -lsfml-graphics -lsfml-window -lsfml-system
@@ -10,15 +13,17 @@ On Linux (Ubuntu), I did...
   sudo apt install libsfml-dev
   g++ -O3 colorfulVideo.cpp -lsfml-graphics -lsfml-window -lsfml-system
   ./a.out
-If you care to know, the SFML files are installed in /usr/include and /usr/lib .
+If you care to know, the SFML files are probably installed in /usr/include and /usr/lib .
 
 On Windows, you can easily get SFML to work via the MinGW version that the SFML people link to...
-  https://www.sfml-dev.org/download/sfml/2.5.1/
-I put everything (MinGW, SFML, and this code) in the same folder,
-then I added ...\mingw64\bin\ to Windows' Path variable, then ran...
-  g++ -O3 colorfulVideo.cpp -I SFML-2.5.1\include -L SFML-2.5.1\lib -lsfml-graphics -lsfml-window -lsfml-system
-Before running a.exe, I had to either move 3 .dll files from ...\SFML-2.5.1\bin\
-into the current folder or add ...\SFML-2.5.1\bin\ to Windows' Path variable.
+  https://www.sfml-dev.org/download/sfml/2.6.2/
+I put everything (MinGW, SFML, and this code) in the same folder, then ran...
+  mingw64/bin/g++ -O3 colorfulVideo.cpp -I SFML-2.6.2/include -L SFML-2.6.2/lib -lsfml-graphics -lsfml-window -lsfml-system
+To run via Cygwin terminal...
+  PATH="$PWD/SFML-2.6.2/bin:$PWD/mingw64/bin:$PATH" ./a.exe
+To run via PowerShell...
+  $oldPath = $env:Path; $env:Path = "$PWD\SFML-2.6.2\bin;$PWD\mingw64\bin;$oldPath"; .\a.exe; $env:Path = $oldPath
+I also tried SFML 2.5.1, and it works the exact same (just change all 2.6.2 with 2.5.1).
 
 On Windows, I could also get things to work via Visual Studio Community (I only needed to install "Desktop development with C++")
 by making a new "Project from Existing Code" and eventually selecting "Visual C++" then "console application".
@@ -36,14 +41,15 @@ After all this work and installation of bloated software, it runs a bit slower t
 
 
 
-#include "SFML/Graphics.hpp"
+#include <SFML/Graphics.hpp>
 
 
 
 #include <cmath>
 
 // for my millisecond sleep
-#include <thread>
+#include <chrono>  // std::chrono::milliseconds
+#include <thread>  // std::this_thread::sleep_for
 
 
 
@@ -53,11 +59,11 @@ int main(int argc, char ** argv){
 
   //// define some parameters
   const int n = 501;          // for n by n grid; n = 11 has an interesting look
-  const int extraDelay = 0;   // per frame (in milliseconds)
+  const int extraDelay = 10;   // per frame (in milliseconds)
 
 
   //// create steps and myRange[] for time steps
-  const int steps = 231;   // twice this is length of myRange[]
+  const int steps = 231;   // myRange has 2*steps values
   const float max = 2.3;
   float myRange[steps*2];  // will linearly increase from 0 to max, then decrease back to 0
   for (int i=0; i<steps; i++)
@@ -71,7 +77,7 @@ int main(int argc, char ** argv){
   float X[n];   // x values throughout the image
   for (int x=0; x<n; x++)
     X[x] = max2 * x/(n-1);
-  float R[n][n];   // radial value throughout the image
+  float R[n][n];   // distance from the center at each pixel; put on the stack
   for (int x=0; x<n; x++)
     for (int y=0; y<n; y++)
       R[x][y] = sqrt(pow(X[x] - max2/2, 2) + pow(X[y] - max2/2, 2));  // X[y] gives Y
@@ -105,9 +111,9 @@ int main(int argc, char ** argv){
 
     // take care of progress
     k++;
-    if (k >= 6*steps) k=0;
-    float i = myRange[k % (steps*2)];
-    int j = k / (steps*2);
+    if (k >= 6*steps) k=0;             // linearly increases; resets every 6*steps
+    int j = k / (2*steps);             // equals 0 then 1 then 2 then resets when k resets
+    float i = myRange[k % (2*steps)];  // increases then decreases; resets every 2*steps
 
 
 
@@ -117,27 +123,43 @@ int main(int argc, char ** argv){
     float p12 = pow(i, 1.2);
     int r, g, b;
 
-    for (int x=0; x<n; x++){
-      for (int y=0; y<n; y++){
 
-        if (j==0) {             // 1st part of animation
-          r = scale * sin(X[x]*i) + scale;
-          g = scale * sin(X[x]*p11) + scale;
-          b = scale * sin(X[x]*p12) + scale;
-        }else if (j==1) {        // 2nd part of animation
-          r = scale * sin((X[x] - max2)*i) + scale;
-          g = scale * sin((X[x] - max2)*p11) + scale;
-          b = scale * sin((X[x] - max2)*p12) + scale;
-        }else {                  // 3rd part of animation
-          r = scale * sin(X[x]*i) + scale;
-          g = scale * sin((X[x] - max2)*p11) + scale;
-          b = scale * sin(R[x][y]*i) + scale;
+    if (j==0) {             // 1st part of animation
+      for (int x=0; x<n; x++){
+        /*
+           I should pre-calculate r[x], g[x], and b[x] arrays,
+           but this is already fast enough and clearer as-is.
+        */
+        r = scale * sin(X[x]*i) + scale;
+        g = scale * sin(X[x]*p11) + scale;
+        b = scale * sin(X[x]*p12) + scale;
+        for (int y=0; y<n; y++){
+          image.setPixel(x, y, sf::Color(r, g, b, 255));
         }
-
-        image.setPixel(x, y, sf::Color(r, g, b, 255));
-
+      }
+    } else if (j==1) {        // 2nd part of animation
+      for (int x=0; x<n; x++){
+        r = scale * sin((X[x] - max2)*i) + scale;
+        g = scale * sin((X[x] - max2)*p11) + scale;
+        b = scale * sin((X[x] - max2)*p12) + scale;
+        for (int y=0; y<n; y++){
+          image.setPixel(x, y, sf::Color(r, g, b, 255));
+        }
+      }
+    } else {                  // 3rd part of animation
+      for (int x=0; x<n; x++){
+        r = scale * sin(X[x]*i) + scale;
+        g = scale * sin((X[x] - max2)*p11) + scale;
+        for (int y=0; y<n; y++){
+          b = scale * sin(R[x][y]*i) + scale;
+          image.setPixel(x, y, sf::Color(r, g, b, 255));
+        }
       }
     }
+
+
+
+
 
 
 

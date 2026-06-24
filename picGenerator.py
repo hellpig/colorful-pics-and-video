@@ -13,29 +13,25 @@ pattern = 1
 
 # (3) choose the name of your PNG file
 name = 'pattern'
-# set name to 0 (name = 0) if you do not want to create a file
 # existing files will be overwritten
+# set name to 0 (name = 0) if you do not want to create a file
 
 # (4) run this file to display your image and create a PNG file
 
-# *5* On the Internet, you can find and download a free program called
+# *5* On the internet, you can find and download a free program called
 # PNGOUT to optimize your PNG file! Sometimes, JPG can give smaller files.
 
 
 
 import numpy as np
 from PIL import Image   # pip install pillow
+import sys
 
 
 
 ## define X, Y, and R
-
-# from left and top
-# The [0] and [0:2] added to make X and Y 3D arrays for np.concatenate()
-X, Y = np.meshgrid(np.linspace(0, 2*np.pi, n), np.linspace(0, 2*np.pi, n), [0])[0:2]
-
+X, Y = np.meshgrid(np.linspace(0, 2*np.pi, n), np.linspace(0, 2*np.pi, n))  # from left and top
 R = np.sqrt(np.square(X - np.pi) + np.square(Y - np.pi))  #from center
-
 
 
 ## define distances from corners
@@ -112,8 +108,8 @@ elif pattern == 13:
     b = .5*np.sin(3*X) + .5
 elif pattern == 14:
     r = .5*np.sin(1*X) + .5
-    g = .5*np.sin(2*X+2*pi/3) + .5
-    b = .5*np.sin(3*X+4*pi/3) + .5
+    g = .5*np.sin(2*X+2*np.pi/3) + .5
+    b = .5*np.sin(3*X+4*np.pi/3) + .5
 elif pattern == 15:
     r = .5*np.sin(1*Rse) + .5
     g = .5*np.sin(2*Rse) + .5
@@ -128,11 +124,12 @@ elif pattern == 17:
     b = .5*np.sin(4*X) + .5
 else:
     print('error: not a valid pattern')
-    quit()
+    sys.exit(1)
 
 ## actually create the image
-pic = np.concatenate( (r*255.999, g*255.999, b*255.999), axis=2)
-image = Image.fromarray(pic.astype('uint8'), 'RGB')
+pic = np.dstack((r, g, b))
+pic = np.clip(pic * 255.999, 0, 255).astype(np.uint8)
+image = Image.fromarray(pic, 'RGB')
 image.show()
 if isinstance(name, str):
     #feel free to use JPG
